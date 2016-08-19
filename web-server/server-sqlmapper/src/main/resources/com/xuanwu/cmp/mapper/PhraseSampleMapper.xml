@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.xuanwu.cmp.mapper.PhraseSampleMapper">
+
+    <resultMap id="phraseSampleResult" type="phraseSample">
+        <id column="id" property="id" />
+        <result column="content" property="content" />
+        <result column="type" property="typeIndex" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_remove" property="isRemove" />
+    </resultMap>
+
+    <select id="findAll" resultMap="phraseSampleResult">
+        select * from gsms_phrase_sample ps where ps.is_remove = 0
+        order by ps.type asc
+    </select>
+
+    <select id="getById" resultMap="phraseSampleResult" parameterType="int">
+        select * from gsms_phrase_sample ps where ps.is_remove = 0 and ps.id = #{id}
+    </select>
+
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into gsms_phrase_sample (`type`,`content`,`create_time`,`update_time`,`is_remove`)
+        values(#{type.value},#{content},#{createTime},#{updateTime},#{isRemove})
+    </insert>
+
+    <update id="update">
+        update gsms_phrase_sample
+        set type=#{type.value},content=#{content},update_time=#{updateTime},is_remove=#{isRemove}
+        where id=#{id}
+    </update>
+
+    <update id="remove">
+        update gsms_phrase_sample set is_remove = 1 where id=#{id}
+    </update>
+
+
+</mapper>

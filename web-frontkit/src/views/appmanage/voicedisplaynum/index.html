@@ -1,0 +1,84 @@
+<div class="panel panel-info"> 
+   <div class="panel-heading ">
+     语音显号 
+    <button type="button" class="btn btn-primary btn-sm pull-right" style="margin:-5px;" ng-click="addVoiceDisplayNum();"><i class="fa fa-plus"></i> 新增</button> 
+   </div> 
+   <table class="table table-striped table-bordered table-hover"> 
+    <thead> 
+     <tr> 
+      <th width="80" class="text-center">ID</th> 
+      <th class="text-center">语音显号</th> 
+      <th class="text-center">审核状态</th> 
+      <th width="160" class="text-center">操作</th> 
+     </tr> 
+    </thead> 
+    <tbody> 
+     <tr ng-repeat="number in voiceDisplayNums"> 
+      <td class="text-center">{{number.id}}</td> 
+      <td class="text-center">{{number.displayNum}}</td> 
+      <td class="text-center"> <span ng-if="number.state=='AUDITED'" class="label label-success">已审核</span> <span ng-if="number.state=='UNAUDITED'" class="label label-info">未审核</span> <span ng-if="number.state=='REJECT'" class="label label-danger">未通过</span> </td> 
+      <td class="text-center"> <a href="javascript:;" class="btn btn-info btn-xs" ng-click="showVoiceDisplayNum(number)"><i class="fa fa-info"></i> 查看</a>&nbsp; <a ng-if="number.state!='AUDITED'" href="javascript:;" class="btn btn-warning btn-xs" ng-click="editVoiceDisplayNum(number)"><i class="fa fa-pencil"></i> 编辑</a>&nbsp; <a href="javascript:;" class="btn btn-danger btn-xs" ng-click="deleteVoiceDisplayNum(number)"><i class="fa fa-remove"></i> 删除</a> </td> 
+     </tr> 
+    </tbody> 
+   </table> 
+</div> 
+  <script type="text/ng-template" id="modal/addVoiceDisplayNumForm.tpl.html">
+  	<form class="form-inline w5c-form" name="form" w5c-form-validate=""
+			novalidate>
+  	<div class="panel panel-info"> <div class="panel-body">
+  	<table class="table table-striped table-bordered"> 
+	   <tbody align="center"> 
+		
+			<tr>
+			 <td>语音显号</td> <td align="left"><input class="input-sm" required=""  
+			ng-pattern="/^(((13[0-9]{1})|(15[0-9]{1}))+\d{8})$/" name="number"
+					type="text" ng-model="voiceDisplayNum.displayNum"></td>
+			</tr>
+			<tr>
+			<td>显号资料</td><td align="left">
+										<button type="button"  class="btn btn-default" ngf-select ngf-pattern="application/pdf,application/msword,image/png,image/jpeg,aplication/zip" ng-model="file.file"
+                            accept="application/pdf,application/msword,image/png,image/jpeg,application/zip"  ngf-multiple="false">
+                        选择附件 {{file.file.name}}
+                    </button>&nbsp;<a target="_blank" ng-if="voiceDisplayNum.state" ng-href="{{downloadUrl}}">资料下载</a></td></tr></tbody>
+			</table></div>
+				<div class="panel-footer"><p class="help-block">支持pdf、doc、docx、jpg、png等<=2M大小的文件，压缩文件支持rar/zip大小限制10M，否则限制上传并提示，必填，仅支持上传一个文件，后面上传的覆盖上一文件</p></div>
+		</div>
+		</form>
+  </script> 
+  <script type="text/ng-template" id="modal/showVoiceDisplayNum.tpl.html">
+	  <table class="table table-striped table-bordered"> 
+	   <tbody align="center"> 
+	    <tr class="info"> 
+	     <td>语音显号</td>
+	     <td>{{voiceDisplayNum.displayNum}}</td> 
+	    </tr> 
+	    <tr class="info"> 
+	     <td>显号资料</td>
+	     <td><a  target="_blank"  ng-if="!file.file.name" ng-href="{{downloadUrl}}">资料下载</a></td> 
+	    </tr> 
+	   </tbody> 
+	  </table> 
+	  <div align="center"> 
+	   <img ng-if="voiceDisplayNum.fileType=='img'" class="img-responsive" ng-src="{{downloadUrl}}" /> 
+	  </div>
+  </script> 
+  <script type="text/ng-template" id="modal/voiceDisplayNumCommon.tpl.html">
+        <div class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog {{diagCls ? diagCls : ''}}">
+                <div class="modal-content">
+                    <div class="modal-header" ng-show="title">
+                        <button type="button" class="close" aria-label="Close" ng-click="$hide()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" ng-bind="title" style="font-weight:bold;"></h4>
+                    </div>
+                    <div class="modal-body" ng-bind="content"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-danger" ng-hide="closeBtn.hide" ng-click="$hide()">关闭
+                        </button>                       
+                    </div>
+                </div>
+            </div>
+        </div>
+  </script> 
+  

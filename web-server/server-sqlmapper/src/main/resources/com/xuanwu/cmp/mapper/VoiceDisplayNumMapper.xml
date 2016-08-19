@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.xuanwu.cmp.mapper.VoiceDisplayNumMapper">
+
+	<sql id="findResultsSql">
+		where is_remove=0
+		<if test="params.enterpriseId!=null">
+			and enterprise_id = #{params.enterpriseId}
+		</if>
+		order by id desc
+	</sql>
+
+
+
+	<resultMap id="VoiceDisplayNumResult" type="VoiceDisplayNum">
+		<id column="id" property="id" />
+		<result column="display_num" property="displayNum" />
+		<result column="enterprise_id" property="enterpriseId" />
+		<result column="state" property="stateIdx" />
+		<result column="certify_file" property="certifyFile" />
+		<result column="certify_file" property="fileType" />
+	</resultMap>
+
+
+	<select id="findResultCount" resultType="int" parameterType="map">
+		select count(*) from gsms_vocie_display_num
+		<include refid="findResultsSql" />
+	</select>
+
+	<select id="findResults" resultMap="VoiceDisplayNumResult"
+		parameterType="map">
+		select * from gsms_vocie_display_num
+		<include refid="findResultsSql" />
+	</select>
+
+	<insert id="insert" keyProperty="id" useGeneratedKeys="true">
+		insert
+		into
+		gsms_vocie_display_num(`enterprise_id`,`display_num`,`certify_file`,`state`,`create_time`,`is_remove`)
+		values(#{enterpriseId},#{displayNum},#{certifyFile},#{state.index},#{createTime},0)
+	</insert>
+
+	<update id="update">
+		update gsms_vocie_display_num set
+		enterprise_id=#{enterpriseId},display_num=#{displayNum},certify_file=#{certifyFile},state=#{state.index}
+		where id=#{id} and enterprise_id=#{enterpriseId}
+	</update>
+	
+	<select id="getById" resultMap="VoiceDisplayNumResult"
+		parameterType="int">
+		select * from gsms_user_test_num where id=#{id}
+	</select>
+
+	<select id="getByNumber" resultMap="VoiceDisplayNumResult"
+		parameterType="String">
+		select * from gsms_vocie_display_num
+		where is_remove=0
+		and display_num=#{displayNum}
+	</select>
+
+	<delete id="deleteById" parameterType="map">
+		update
+		gsms_vocie_display_num set is_remove=1 where
+		id=#{id} and
+		enterprise_id=#{enterpriseId}
+	</delete>
+
+
+
+</mapper>

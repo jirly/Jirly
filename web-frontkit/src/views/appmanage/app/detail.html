@@ -1,0 +1,59 @@
+<div class="panel panel-success">
+    <div class="panel-heading">查看应用</div>
+    <table class="table table-striped table-bordered table-hover">
+        <tbody>
+            <tr>
+                <td width="20%" class="text-right bold">应用名称：</td>
+                <td width="50%">{{app.name}}</td>
+                <td width="30%"></td>
+            </tr>
+            <tr>
+                <td class="text-right bold">应用状态：</td>
+                <td>
+                    <span ng-show="app.state=='OFFLINE'" class="label label-success">未上线</span>
+                    <span ng-show="app.state=='ONLINE'" class="label label-info">运营中</span>
+                    <span ng-show="app.state=='PAUSED'" class="label label-primary">已暂停</span>
+                    <!--{{app.state=="OFFLINE"?"未上线":(app.state=="ONLINE"?"运营中":"已暂停")}}-->
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="text-right bold">APP ID：</td>
+                <td>{{app.identify}}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="text-right bold">服务器白名单：</td>
+                <td>{{app.trustIpsStr}}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="text-right bold">支持能力：</td>
+                <td>
+                    <label class="checkbox-inline" ng-repeat="e in enablers">
+                        <input type="checkbox" id="enablers{{$index}}" name="enablers" ng-checked="isSelected(e.typeIdx)" disabled="disabled" value="{{e.typeIdx}}" /> {{e.remark}}&nbsp;&nbsp; </label>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="text-right bold">回调地址：</td>
+                <td>{{app.callbackUrl}}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="text-right bold">创建时间：</td>
+                <td>{{app.createTime|date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <div class="text-center">
+                        <button type="button" class="btn btn-sm btn-warning" ng-click="editApp(app.id)"><i class="fa fa-pencil"></i> 编辑</button>
+                        &nbsp;
+                        <button type="button" class="btn btn-sm btn-info" onclick="window.history.back();"><i class="fa fa-undo"></i> 返回</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

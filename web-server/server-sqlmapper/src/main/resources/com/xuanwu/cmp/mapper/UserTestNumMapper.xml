@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.xuanwu.cmp.mapper.UserTestNumMapper">
+
+	<resultMap id="appResult" type="app">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="identify" property="identify" />
+	</resultMap>
+
+	<resultMap id="phraseResult" type="phrase">
+		<id column="id" property="id" />
+		<result column="content" property="content" />
+		<result column="title" property="title" />
+		<result column="type" property="typeIndex" />
+		<result column="state" property="stateIndex" />
+		<result column="sign_id" property="signId" />
+		<result column="identify" property="identify" />
+	</resultMap>
+
+	<resultMap id="TestNumResult" type="UserTestNum">
+		<id column="id" property="id" />
+		<result column="number" property="number" />
+		<result column="create_time" property="createTime" />
+	</resultMap>
+	
+	<sql id="findResultsSql">
+		where is_remove=0
+		<if test="params.enterpriseId!=null">and enterprise_id = #{params.enterpriseId} </if>
+	</sql>
+
+	<select id="findResultCount" resultType="int" parameterType="map">
+		select count(*) from gsms_user_test_num
+		<include refid="findResultsSql" />
+	</select>
+
+	<select id="findResults" resultMap="TestNumResult" parameterType="map">
+		select * from gsms_user_test_num
+		<include refid="findResultsSql" />
+		order by id desc
+		<if test="page != null">limit #{page.from}, #{page.size}</if>
+	</select>
+
+	<insert id="insert" keyProperty="id" useGeneratedKeys="true">
+		insert into gsms_user_test_num(`enterprise_id`,`number`,`create_time`,`is_remove`)
+		values(#{enterpriseId},#{number},#{createTime},0)
+	</insert>
+
+	<update id="update">
+		update gsms_user_test_num set enterprise_id=#{enterpriseId}, number=#{number} where id=#{id}
+	</update>
+	
+	<select id="getById" resultMap="TestNumResult" parameterType="int">
+		select * from gsms_user_test_num where id=#{id} and enterprise_id=#{enterpriseId}
+	</select>
+
+	<select id="getByNumber" resultMap="TestNumResult" parameterType="String">
+		select * from gsms_user_test_num where is_remove=0 and number=#{number}
+	</select>
+
+	<delete id="deleteById" parameterType="map">
+		update gsms_user_test_num set is_remove=1 where id=#{id} and enterprise_id=#{enterpriseId}
+	</delete>
+
+	<select id="getTestApp" resultMap="appResult">
+		select id, name, identify from gsms_app where is_remove=0 and enterprise_id=#{enterpriseId} and is_test=1
+	</select>
+
+	<select id="getTestPhrase" resultMap="phraseResult">
+		select * from gsms_phrase
+		where is_remove=0 and enterprise_id=0 and is_test=1
+	</select>
+
+</mapper>

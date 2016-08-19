@@ -1,0 +1,176 @@
+<form class="form-horizontal w5c-form" name="form" w5c-form-validate="vm" novalidate>
+<table class="table table-striped table-bordered table-hover">
+    <tbody>
+        <tr ng-if="phrase.id">
+            <td width="20%">模板ID</td>
+            <td width="70%">{{phrase.identify}}</td>
+            <td width="10%"></td>
+        </tr>
+        <tr>
+            <td width="20%">模板名称</td>
+            <td width="70%">
+                <input type="text" id="inputName" name="name" ng-model="phrase.title" class="form-control"
+                       required ng-maxlength="20"/>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>模板类型</td>
+            <td>
+                <label class="radio-inline">
+                    <input name="phraseType" type="radio" ng-model="phrase.type"  value="SMS_NOTIFICATION" ng-checked="true"> 通知模板
+                </label>
+                <label class="radio-inline">
+                    <input name="phraseType" type="radio" ng-model="phrase.type"  value="SMS_VERIFICATION_CODE"> 验证码模板
+                </label>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>所属应用</td>
+            <td>
+                <select id="inputAppId" name="appId" class="form-control" ng-model="phrase.appId"
+                        ng-options="a.id as a.name for a in apps" ng-change="toggleAppUrl();">
+                    <option value="">请选择</option>
+                </select>
+            </td>
+            <td>
+                <a ng-show="appCallbackUrl" ng-href="{{appCallbackUrl}}"><i class="fa fa-link"></i></a>
+            </td>
+        </tr>
+        <tr>
+            <td>短信签名</td>
+            <td>
+                <select id="inputSignId" name="signId" class="form-control" ng-model="phrase.signId" ng-disabled="addSign"
+                        ng-options="s.id as s.sign for s in signs">
+                    <option value="">请选择</option>
+                </select>
+            </td>
+            <td>
+                <button type="button" ng-show="!addSign" class="btn btn-sm btn-info" ng-click="toggleAddSign(addSign);"><i class="fa fa-plus"></i></button>
+                <button type="button" ng-show="addSign" class="btn btn-sm btn-danger" ng-click="toggleAddSign(addSign);"><i class="fa fa-trash"></i></button>
+            </td>
+        </tr>
+        <tr ng-if="addSign">
+            <td>新增短信签名</td>
+            <td>
+                <input type="text" id="inputSignContent" name="signContent" ng-model="phrase.signContent" class="form-control"
+                       required ng-minlength="3" ng-maxlength="8"/>
+            </td>
+            <td></td>
+        </tr>
+        <tr ng-if="addSign">
+            <td>签名类型</td>
+            <td>
+                <select id="inputSignType" name="signType" class="form-control" ng-model="phrase.signType"
+                        ng-options="t.value as t.label for t in signTypes" required>
+                    <option value="">请选择</option>
+                </select>
+            </td>
+            <td></td>
+        </tr>
+        <tr ng-if="addSign">
+            <td>证明函</td>
+            <td>
+                <div class="form-group form-inline" style="margin-left: 5px;">
+                    <input type="text" id="inputCertifyFile" name="certifyFile" ng-model="uploadData.certifyFile.name" class="form-control"
+                           ng-maxlength="50"/>
+                    <button type="button"  class="btn btn-default" ngf-select ngf-pattern="application/pdf,application/msword,image/png,image/jpeg,aplication/zip" ng-model="uploadData.certifyFile"
+                            accept="application/pdf,application/msword,image/png,image/jpeg,application/zip" ngf-max-size="10MB" ngf-multiple="false">
+                        选择附件
+                    </button>
+                    <button class="btn btn-primary" ng-click="uploadCertifyFile();" ng-show="uploadData.certifyFile">开始上传</button>
+                    <span ng-show="progress.certifyFile > 0 && progress.certifyFile < 100">{{progress.certifyFile}}%</span>
+                    <span ng-show="progress.certifyFile == 100"><i class="green fa fa-check"></i></span>
+                    <a ng-if="phrase.certifyFile" href="javascript:void(0);" ng-click="downloadFile(phrase.certifyFile);">{{phrase.certifyFile}}</a>
+                </div>
+                <div>
+                    <span class="red">支持pdf、doc、docx、jpg、png等<=2M大小的文件，压缩文件支持rar/zip大小限制10M，否则限制上传并提示，
+                        仅支持上传一个文件，后面上传的覆盖上一文件</span>
+                </div>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>模板内容</td>
+            <td>
+                <textarea class="form-control" id="inputContent" name="content" ng-model="phrase.content"
+                          maxlength="1000" rows="5" required>
+                </textarea>
+            </td>
+            <td>
+                <a href="#/appmanage/samplephrase" type="button" class="btn btn-sm btn-info" onclick=""><i class="fa fa-th"></i>模板样例</a>
+            </td>
+        </tr>
+        <tr ng-if="phrase.type == 'SMS_VERIFICATION_CODE'">
+            <td>产品类型</td>
+            <td>
+                <label class="radio-inline">
+                    <input name="appType" type="radio" ng-model="phrase.appType"  value="ONLINE" ng-checked="true"> 已上线app/网页
+                </label>
+                <label class="radio-inline">
+                    <input name="appType" type="radio" ng-model="phrase.appType"  value="OFFLINE"> 未上线app/网页
+                </label>
+            </td>
+            <td></td>
+        </tr>
+        <tr ng-if="phrase.type == 'SMS_VERIFICATION_CODE' && phrase.appType == 'ONLINE'">
+            <td>APP/网页地址</td>
+            <td>
+                <input type="text" id="inputAppUrl" name="appUrl" ng-model="phrase.appUrl" class="form-control"
+                       ng-maxlength="200"/>
+            </td>
+            <td></td>
+        </tr>
+        <tr ng-if="phrase.type == 'SMS_VERIFICATION_CODE' && phrase.appType == 'OFFLINE'">
+            <td>产品名截图</td>
+            <td>
+                <div class="form-group form-inline" style="margin-left: 5px;">
+                    <input type="text" id="inputAppLogo" name="appLogo" ng-model="uploadData.appLogo.name" class="form-control"
+                           ng-maxlength="50"/>
+                    <button type="button"  class="btn btn-default" ngf-select ngf-pattern="image/png,image/jpeg,aplication/zip" ng-model="uploadData.appLogo"
+                            accept="image/png,image/jpeg,application/zip" ngf-max-size="10MB" ngf-multiple="false">
+                        选择附件
+                    </button>
+                    <button class="btn btn-primary" ng-click="uploadAppLogo();" ng-show="uploadData.appLogo">开始上传</button>
+                    <span ng-show="progress.appLogo > 0 && progress.appLogo < 100">{{progress.appLogo}}%</span>
+                    <span ng-show="progress.appLogo == 100"><i class="green fa fa-check"></i></span>
+                    <a ng-if="phrase.appLogo" href="javascript:void(0);" ng-click="downloadFile(phrase.appLogo);">{{phrase.appLogo}}</a>
+                </div>
+                <div>
+                    <span class="red">支持jpg、png等<=2M大小的文件，压缩文件支持rar/zip大小限制10M，否则限制上传并提示，
+                        仅支持上传一个文件，后面上传的覆盖上一文件</span>
+                </div>
+            </td>
+            <td></td>
+        </tr>
+        <tr ng-if="phrase.type == 'SMS_VERIFICATION_CODE' && phrase.appType == 'OFFLINE'">
+            <td>验证页截图</td>
+            <td>
+                <div class="form-group form-inline" style="margin-left: 5px;">
+                    <input type="text" id="inputAppVerifyPage" name="appVerifyPage" ng-model="uploadData.appVerifyPage.name" class="form-control"
+                           ng-maxlength="50"/>
+                    <button type="button"  class="btn btn-default" ngf-select ngf-pattern="image/png,image/jpeg,aplication/zip" ng-model="uploadData.appVerifyPage"
+                            accept="image/png,image/jpeg,application/zip" ngf-max-size="10MB" ngf-multiple="false">
+                        选择附件
+                    </button>
+                    <button class="btn btn-primary" ng-click="uploadAppVerifyPage();" ng-show="uploadData.appVerifyPage">开始上传</button>
+                    <span ng-show="progress.appVerifyPage > 0 && progress.appVerifyPage < 100">{{progress.appVerifyPage}}%</span>
+                    <span ng-show="progress.appVerifyPage==100"><i class="green fa fa-check"></i></span>
+                    <a ng-if="phrase.appVerifyPage" href="javascript:void(0);" ng-click="downloadFile(phrase.appVerifyPage);">{{phrase.appVerifyPage}}</a>
+                </div>
+                <div>
+                    <span class="red">支持jpg、png等<=2M大小的文件，压缩文件支持rar/zip大小限制10M，否则限制上传并提示，
+                        仅支持上传一个文件，后面上传的覆盖上一文件</span>
+                </div>
+            </td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+</form>
+<div class="text-center">
+    <button type="button" class="btn btn-sm btn-primary" ng-disabled="form.$invalid || form.$pristine" ng-click="save();">确定</button>
+    <button type="button" class="btn btn-sm btn-info" onclick="window.history.back();"><i class="fa fa-undo"></i> 返回</button>
+</div>
+

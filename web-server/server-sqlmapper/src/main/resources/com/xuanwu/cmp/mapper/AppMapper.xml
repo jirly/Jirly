@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.xuanwu.cmp.mapper.AppMapper">
+
+	<resultMap id="appResult" type="app">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="identify" property="identify" />
+		<result column="enterprise_id" property="enterpriseId" />
+		<result column="callback_url" property="callbackUrl" />
+		<result column="enabled_trust_ip" property="enabledTrustIp" />
+		<result column="type" property="typeIdx" />
+		<result column="state" property="stateIdx" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+		<result column="is_test" property="test" />
+		<collection column="id" property="enablers" select="findEnablers" />
+		<collection column="id" property="trustIps" select="findTrustIps" />
+	</resultMap>
+
+	<sql id="findResultsSql">
+		where is_remove=0
+		<if test="params.test!=null">and is_test=#{params.test}</if>
+		<if test="params.enterpriseId!=null and params.enterpriseId!=0">and enterprise_id=#{params.enterpriseId}</if>
+		<if test="params.name!=null">and name like concat('%', #{params.name}, '%')</if>
+		<if test="params.identify!=null">and identify=#{params.identify}</if>
+		<if test="params.type!=null">and type=#{params.type}</if>
+		<if test="params.state!=null">and type=#{params.state}</if>
+	</sql>
+
+	<select id="findResultCount" resultType="int" parameterType="map">
+		select count(*) from gsms_app
+		<include refid="findResultsSql" />
+	</select>
+
+	<select id="findResults" resultMap="appResult" parameterType="map">
+		select * from gsms_app
+		<include refid="findResultsSql" />
+		order by id desc
+		<if test="page != null">limit #{page.from}, #{page.size}</if>
+	</select>
+
+	<select id="getById" resultMap="appResult" parameterType="int">
+		select * from gsms_app where is_remove=0 and id=#{id} <if test="enterpriseId!=0"> and enterprise_id=#{enterpriseId}</if>
+	</select>
+
+	<insert id="insert" keyProperty="id" useGeneratedKeys="true">
+		insert into gsms_app(`name`,`identify`,`enterprise_id`,`callback_url`,`enabled_trust_ip`,`type`,`state`,`create_time`,`is_test`,`is_remove`)
+		values(#{name},#{identify},#{enterpriseId},#{callbackUrl},#{enabledTrustIp},#{type.index},#{state.index},#{createTime},#{test},0)
+	</insert>
+
+	<update id="update">
+		update gsms_app set name=#{name},callback_url=#{callbackUrl},enabled_trust_ip=#{enabledTrustIp},
+		type=#{type.index},state=#{state.index},update_time=#{updateTime},is_test=#{test}
+		where id=#{id} and enterprise_id=#{enterpriseId}
+	</update>
+	
+	<update id="updateState">
+		update gsms_app set state=#{state} where id=#{appId} and enterprise_id=#{enterpriseId}
+	</update>
+
+	<delete id="deleteById">
+		update gsms_app set is_remove=1 where id=#{id} and is_test=false <if test="enterpriseId!=0"> and enterprise_id=#{enterpriseId}</if>
+	</delete>
+
+	<select id="findEnablers" resultType="Integer">
+		select enabler_type from gsms_app_enabler where app_id=#{appId}
+	</select>
+
+	<delete id="deleteEnablers">
+		delete from gsms_app_enabler where app_id=#{appId}
+	</delete>
+
+	<insert id="addEnablers" parameterType="map">
+		insert into gsms_app_enabler(app_id, enabler_type) values(#{appId}, #{enablerType})
+	</insert>
+
+	<select id="findTrustIps" resultType="String">
+		select trust_ip from gsms_user_trust_ip where is_remove=1 and app_id=#{appId}
+	</select>
+
+	<select id="getByIdentify" resultMap="appResult" parameterType="map">
+		select * from gsms_app
+		<include refid="findResultsSql"/>
+	</select>
+</mapper>

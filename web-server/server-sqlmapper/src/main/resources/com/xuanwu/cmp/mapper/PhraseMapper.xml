@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.xuanwu.cmp.mapper.PhraseMapper">
+
+    <resultMap id="phraseResult" type="phrase">
+        <id column="id" property="id" />
+        <result column="content" property="content" />
+        <result column="title" property="title" />
+        <result column="msg_type" property="msgTypeIndex" />
+        <result column="identify" property="identify" />
+        <result column="type" property="typeIndex" />
+        <result column="state" property="stateIndex" />
+        <result column="sign_id" property="signId" />
+        <result column="app_id" property="appId" />
+        <result column="enterprise_id" property="enterpriseId" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_test" property="isTest" />
+        <result column="is_remove" property="isRemove" />
+        <result column="app_name" property="appName" />
+        <result column="app_type" property="appTypeIndex" />
+        <result column="app_url" property="appUrl" />
+        <result column="app_logo" property="appLogo" />
+        <result column="app_verify_page" property="appVerifyPage" />
+        <result column="audit_comment" property="auditComment" />
+        <result column="sign_content" property="signContent" />
+        <result column="certify_file" property="certifyFile" />
+        <result column="sign_type" property="signTypeIndex" />
+    </resultMap>
+
+    <sql id="findConditionsSql">
+        where p.is_remove = 0 and p.is_test = 0
+        <if test="params.enterpriseId != 0">and p.enterprise_id = #{params.enterpriseId}</if>
+        <if test="params.title != null">and p.title like concat('%', #{params.title}, '%')</if>
+        <if test="params.appName != null">and a.name like concat('%', #{params.appName}, '%')</if>
+        <if test="params.identify != null">and p.identify = #{params.identify}</if>
+        <choose>
+            <when test="params.type != null">and p.type = #{params.type}</when>
+            <otherwise>
+                <if test="params.parentType == 'sms'">and (p.type = 1 or p.type = 2 or p.type = 3)</if>
+                <if test="params.parentType == 'voice'">and (p.type = 11 or p.type = 12)</if>
+            </otherwise>
+        </choose>
+    </sql>
+
+    <select id="findResultCount" resultType="int" parameterType="map">
+        select count(*) from gsms_phrase p left join gsms_app a on p.app_id = a.id
+        <include refid="findConditionsSql" />
+    </select>
+
+    <select id="findResults" resultMap="phraseResult" parameterType="map">
+        select *, a.name app_name from gsms_phrase p left join gsms_app a on p.app_id = a.id
+        <include refid="findConditionsSql" />
+        order by p.id desc
+        <if test="page != null">limit #{page.from}, #{page.size}</if>
+    </select>
+
+    <select id="getById" resultMap="phraseResult" parameterType="map">
+        SELECT
+            p.*, a.name app_name, s.sign sign_content, s.certify_file certify_file, s.type sign_type, m.*, r.comment audit_comment
+        FROM
+            gsms_phrase p
+                LEFT JOIN
+            gsms_app a ON p.app_id = a.id
+                LEFT JOIN
+            gsms_phrase_audit_material m ON p.id = m.phrase_id
+                LEFT JOIN
+			gsms_user_sign s ON p.sign_id = s.id
+                LEFT JOIN
+            gsms_workflow_process_record r ON p.id = r.target_id AND r.type = 5
+        WHERE
+            p.id = #{id} <if test="enterpriseId != 0">and p.enterprise_id = #{enterpriseId}</if>
+    </select>
+
+    <select id="getIdentifys" resultMap="phraseResult">
+        select identify from gsms_phrase where is_remove = 0 and is_test = 0
+        <if test="identify != null">and identify like concat('%', #{identify}, '%')</if>
+        <if test="enterpriseId != 0">and enterprise_id = #{enterpriseId}</if>
+        <if test="parentType == 'sms'">and (type = 1 or type = 2 or type = 3)</if>
+        <if test="parentType == 'voice'">and (type = 11 or type = 12)</if>
+        order by identify asc
+    </select>
+
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into gsms_phrase (`title`,`type`,`msg_type`,`identify`,`app_id`,`sign_id`,`content`,`state`,`enterprise_id`,`create_time`,`update_time`,`is_test`,`is_remove`)
+        values(#{title},#{type.value},#{msgType.value},#{identify},#{appId},#{signId},#{content},#{state.value},#{enterpriseId},#{createTime},#{updateTime},#{isTest},#{isRemove})
+    </insert>
+
+    <update id="update">
+        update gsms_phrase
+        set title=#{title},type=#{type.value},app_id=#{appId},sign_id=#{signId},content=#{content},state=#{state.value},update_time=#{updateTime}
+        where id=#{id} and enterprise_id = #{enterpriseId}
+    </update>
+
+    <update id="remove">
+        update gsms_phrase set is_remove = 1 where id=#{id} and enterprise_id = #{enterpriseId}
+    </update>
+
+    <delete id="deleteById" parameterType="map">
+        delete from gsms_phrase where id=#{id} <if test="enterpriseId != 0">and enterprise_id = #{enterpriseId}</if>
+    </delete>
+
+    <select id="findByEnterpriseApp" resultMap="phraseResult" parameterType="map">
+        select * from gsms_phrase p where p.is_remove = 0
+        <if test="params.appId != null">and p.app_id = #{params.appId}</if>
+        <if test="params.enterpriseId != 0">and p.enterprise_id = #{params.enterpriseId}</if>
+        <if test="params.test != null">and p.is_test = #{params.test}</if>
+        <if test="params.state != null">and p.state = #{params.state}</if>
+        <if test="params.type != null">and p.type = #{params.type}</if>
+    </select>
+
+</mapper>

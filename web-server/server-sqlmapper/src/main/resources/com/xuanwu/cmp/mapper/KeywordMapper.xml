@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.xuanwu.cmp.mapper.KeywordMapper">
+	<!-- entity 非法关键字(gsms_cache_key_word) -->
+	<resultMap id="keywordResult" type="keyword">
+		<id property="id" column="id" />
+		<result property="keywordName" column="keyword" />
+		<result property="handleTime" column="handle_time" />
+		<result property="isRemoved" column="is_removed" />
+		<result property="userId" column="user" />
+		<result property="userName" column="userName" />
+		<result property="type" column="type" />
+		<result property="targetId" column="target" />
+	</resultMap>
+
+
+	<sql id="findResultsSql">
+		where is_removed is false
+		<if test="params.keywordName!=null and params.keywordName!=''">and keyword like concat('%',#{params.keywordName},'%')</if>
+		<if test="params.type != null and params.type >= 0 ">and gc.type = #{params.type}</if>
+	</sql>
+
+	<select id="findResultCount" resultType="int" parameterType="map">
+		select count(1) from gsms_cache_key_word
+		<include refid="findResultsSql" />
+	</select>
+
+	<select id="findResults" resultMap="keywordResult" parameterType="map">
+		select id, keyword, type, target, user, handle_time from  gsms_cache_key_word
+		<include refid="findResultsSql" />
+		order by id asc
+
+		<if test="page != null">limit #{page.from}, #{page.size}</if>
+	</select>
+
+	<select id="getById" resultMap="keywordResult" parameterType="int">
+		select id, keyword, type, target, user, handle_time from  gsms_cache_key_word where is_removed is false and id=#{id}
+	</select>
+
+	<insert id="insert" keyProperty="id" useGeneratedKeys="true">
+		insert into gsms_cache_key_word(keyword,handle_time,is_removed,user,type,target)
+			value(#{keywordName},#{handleTime},#{isRemoved},#{userId},#{type},#{targetId})
+	</insert>
+
+	<update id="update">
+		update gsms_cache_key_word set keyword=#{keywordName},handle_time=#{handleTime},
+		is_removed=#{isRemoved},user=#{userId},type=#{type},target=#{targetId}
+		where id=#{id}
+	</update>
+</mapper>

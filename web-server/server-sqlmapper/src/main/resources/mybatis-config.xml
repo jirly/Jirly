@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<package name="com.xuanwu.cmp.domain.entity" />
+	</typeAliases>
+	<mappers>
+		<!-- <package name="com.xuanwu.cmp.mapper" /> -->
+		<mapper resource="com/xuanwu/cmp/mapper/AppMapper.xml" />
+		<mapper resource="com/xuanwu/cmp/mapper/BlacklistMapper.xml"/>
+		<mapper resource="com/xuanwu/cmp/mapper/CarrierMapper.xml" />
+		<mapper resource="com/xuanwu/cmp/mapper/CarrierTelesegMapper.xml" />
+		<mapper resource="com/xuanwu/cmp/mapper/ChannelInfoMapper.xml" />
+		<mapper resource="com/xuanwu/cmp/mapper/PhraseMapper.xml" />
+		<mapper resource="com/xuanwu/cmp/mapper/PhraseAuditMaterialMapper.xml" />
+		<mapper resource="com/xuanwu/cmp/mapper/PhraseSampleMapper.xml" />
+		<mapper resource="com/xuanwu/cmp/mapper/PlatformEnablerMapper.xml" />
+		<mapper resource="com/xuanwu/cmp/mapper/KeywordMapper.xml"/>
+		<mapper resource="com/xuanwu/cmp/mapper/RegionMapper.xml" />
+		<mapper resource="com/xuanwu/cmp/mapper/RegionCarrierMapMapper.xml" />
+		<mapper resource="com/xuanwu/cmp/mapper/UserSignMapper.xml" />
+		<mapper resource="com/xuanwu/cmp/mapper/UserTestNumMapper.xml" />
+		<mapper resource="com/xuanwu/cmp/mapper/UserTrustIpMapper.xml" />
+		<mapper resource="com/xuanwu/cmp/mapper/VoiceDisplayNumMapper.xml" />
+	</mappers>
+</configuration>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.xuanwu.cmp.mapper.UserSignMapper">
+
+    <resultMap id="userSignResult" type="userSign">
+        <id column="id" property="id" />
+        <result column="enterprise_id" property="enterpriseId" />
+        <result column="sign" property="sign" />
+        <result column="type" property="typeIndex" />
+        <result column="state" property="stateIndex" />
+        <result column="create_time" property="createTime" />
+        <result column="certify_file" property="certifyFile" />
+        <result column="is_remove" property="isRemove" />
+    </resultMap>
+
+
+    <select id="findByEnterprise" resultMap="userSignResult" parameterType="int">
+        select id, sign from gsms_user_sign s
+        where s.is_remove = 0 and s.state = 1 and s.enterprise_id = #{enterpriseId}
+        order by s.id desc
+    </select>
+
+    <select id="findBySign" resultMap="userSignResult" parameterType="map">
+        select s.* from gsms_user_sign s where s.is_remove = 0 and s.state = 1
+        and s.enterprise_id = #{enterpriseId} and s.sign = #{sign}
+    </select>
+
+    <select id="getById" resultMap="userSignResult" parameterType="map">
+        select * from gsms_user_sign s where s.id = #{id}
+        <if test="enterpriseId != 0">and enterprise_id = #{enterpriseId}</if>
+    </select>
+
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into gsms_user_sign (`enterprise_id`, `sign`, `type`, `state`, `create_time`,`certify_file`, `is_remove`)
+        values (#{enterpriseId},#{sign},#{type.value},#{state.value},#{createTime},#{certifyFile},#{isRemove})
+    </insert>
+
+    <update id="remove">
+        update gsms_user_sign set is_remove = 1 where id=#{id}
+        and enterprise_id = #{enterpriseId}
+    </update>
+
+</mapper>

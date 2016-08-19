@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.xuanwu.cmp.mapper.ChannelInfoMapper">
+    <!-- entity 运营商通道表(gsms_carrier_channel)，存放各通道信息 -->
+
+    <!-- entity 运营商通道的部分信息，主要用于页面展示 -->
+    <resultMap type="carrierChannel"
+               id="carrierChannelMap">
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="channelNum" column="channel_num" />
+        <result property="carrier" column="carrier" />
+        <result property="region" column="region" />
+        <result property="sms" column="sms" javaType="boolean" />
+        <result property="longSms" column="long_sms" javaType="boolean" />
+        <result property="mms" column="mms" javaType="boolean" />
+        <result property="voiceCode" column="voice_code" javaType="boolean" />
+        <result property="stateReport" column="state_report" javaType="boolean" />
+        <result property="extendNumLength" column="extend_num_length" />
+        <result property="channelShortNum" column="channel_short_num" />
+        <result property="channelType" column="channel_type" />
+        <result property="state" column="state" />
+        <result property="carrierId" column="carrier_id" />
+        <result property="isWhiteChannel" column="is_white_channel" />
+        <result property="cancarrierIds" column="cancarrierIds" />
+    </resultMap>
+
+    <resultMap id="regionMap" type="region">
+        <id property="id" column="id" />
+        <result property="parentId" column="parent_id" />
+        <result property="name" column="name" />
+        <result property="type" column="type" />
+        <result property="areaIdentity" column="area_identity" />
+        <result property="province" column="province"/>
+        <result property="city" column="city"/>
+        <result property="label" column="name"/>
+    </resultMap>
+
+    <!-- cmp新查询sql  begin-->
+    <select id="findResults" resultMap="carrierChannelMap" parameterType="map">
+        select a.id as id,
+        a.is_white_channel as is_white_channel,
+        a.name as
+        name,
+        a.channel_num as channel_num,
+        c.name as carrier,
+        d.name as region,
+        a.sms as sms,
+        a.long_sms as long_sms,
+        a.mms as mms,
+        a.channel_short_num,
+        a.channel_type,
+        a.state,
+        a.state_report as state_report,
+        c.id as
+        carrier_id
+        from gsms_carrier_channel as a
+        left join gsms_region_carrier
+        as b on a.region_carrier_id=b.id
+        left join gsms_carrier as c on
+        b.carrier_id = c.id
+        left join gsms_region_code as d on b.region_id =
+        d.id
+        left join gsms_specsvs_num e on a.id =e.channel_id
+        left join
+        gsms_enterprise_specnum_bind f on e.id = f.specnum_id
+        <include refid="findResultsSql" />
+        group by a.id
+        order by a.id asc
+        <if test="page != null">limit #{page.from}, #{page.size}</if>
+    </select>
+
+    <sql id="findResultsSql">
+        where
+        a.is_remove=0
+        <if test="params.enterpriseId!=null and params.enterpriseId!=0">and enterprise_id=#{params.enterpriseId}</if>
+        <if test="params.name != null and params.name != ''">
+            and a.name like concat('%',#{params.name},'%')
+        </if>
+        <if test="params.channelNum != null and params.channelNum != ''">
+            and a.channel_num like concat('%',#{params.channelNum},'%')
+        </if>
+        <if test="params.carrier != null and params.carrier != 0">
+            and c.id = #{params.carrier}
+        </if>
+        <if test="params.isWhiteChannel != null">
+            and a.is_white_channel = #{params.isWhiteChannel}
+        </if>
+        <if test="params.msgType > 0">
+            <if test="params.msgType==1">
+                and a.sms=1
+            </if>
+            <if test="params.msgType==2">
+                and a.long_sms=1
+            </if>
+            <if test="params.msgType==4">
+                and a.mms=1
+            </if>
+            <if test="params.msgType==9">
+                and a.voice_code=1
+            </if>
+        </if>
+    </sql>
+    <!-- cmp新查询sql  end-->
+
+    <!-- 查询地域sql begin -->
+    <select id="listAllRegion" resultMap="regionMap" parameterType="map">
+        SELECT
+          id,parent_id,NAME,area_identity,TYPE
+        FROM
+          gsms_region_code
+        WHERE parent_id IS NULL
+    </select>
+
+    <select id="listAllCitys" resultMap="regionMap" parameterType="Integer">
+        SELECT
+          id, NAME
+        FROM
+          gsms_region_code
+        WHERE 1=1
+        <if test="params.parentId != null and params.parentId != 0">
+          and parent_id = #{params.parentId}
+        </if>
+    </select>
+    <!-- 查询地域sql end -->
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+	<!-- Used by the mto client to fetch the frame -->
+<mapper namespace="com.xuanwu.cmp.mapper.RegionMapper">
+
+	<resultMap id="regionResult" type="region">
+		<id property="id" column="id" />
+		<result property="parentId" column="parent_id" />
+		<result property="name" column="name" />
+		<result property="type" column="type" />
+	</resultMap>
+
+
+	<sql id="findResultsSql">
+		where 1=1
+		<if test="params.type!=null and params.type!=-1">and type=#{params.type}</if>
+	</sql>
+
+	<select id="findResults" resultMap="regionResult" parameterType="map">
+		select
+		id as id,
+		parent_id as parent_id,
+		name as name,
+		type as type
+		from gsms_region_code
+		<include refid="findResultsSql" />
+		order by id asc
+	</select>
+
+</mapper>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.xuanwu.cmp.mapper.UserTrustIpMapper">
+
+	<resultMap id="userTrustIpResult" type="userTrustIp">
+		<id column="id" property="id" />
+		<result column="enterprise_id" property="enterpriseId" />
+		<result column="app_id" property="appId" />
+		<result column="trust_ip" property="trustIp" />
+		<result column="platform_id" property="platformId" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+	</resultMap>
+
+	<sql id="findResultsSql">
+		where is_remove=0
+		<if test="params.enterpriseId!=null and params.enterpriseId!=0">and enterprise_id=#{params.enterpriseId}</if>
+		<if test="params.appId!=null and params.appId!=0">and app_id=#{params.appId}</if>
+		<if test="params.trustIp!=null">and trust_ip=#{params.trustIp}</if>
+	</sql>
+
+	<select id="findResultCount" resultType="int" parameterType="map">
+		select count(*) from gsms_user_trust_ip
+		<include refid="findResultsSql" />
+	</select>
+
+	<select id="findResults" resultMap="userTrustIpResult" parameterType="map">
+		select * from gsms_user_trust_ip
+		<include refid="findResultsSql" />
+		order by id desc
+		<if test="page != null">limit #{page.from}, #{page.size}</if>
+	</select>
+
+	<select id="getById" resultMap="userTrustIpResult" parameterType="int">
+		select * from gsms_user_trust_ip where is_remove=0 and id=#{id}
+	</select>
+
+	<insert id="insert" keyProperty="id" useGeneratedKeys="true">
+		insert into gsms_user_trust_ip(`enterprise_id`,`app_id`,`trust_ip`,`platform_id`,`create_time`,`is_remove`)
+		values(#{enterpriseId},#{appId},#{trustIp},#{platform.index},#{createTime},0)
+	</insert>
+
+	<update id="update">
+		update gsms_user_trust_ip set trust_ip=#{trustIp},update_time=#{updateTime} where id=#{id}
+	</update>
+
+	<delete id="deleteById">
+		update gsms_user_trust_ip set is_remove=1 where id=#{id}
+	</delete>
+	
+	<delete id="deleteByAppId">
+		delete from gsms_user_trust_ip where app_id=#{appId}
+	</delete>
+
+</mapper>

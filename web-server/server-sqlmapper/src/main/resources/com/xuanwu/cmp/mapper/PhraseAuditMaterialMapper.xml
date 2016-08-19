@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.xuanwu.cmp.mapper.PhraseAuditMaterialMapper">
+
+    <resultMap id="phraseAuditMaterialResult" type="phraseAuditMaterial">
+        <id column="id" property="id" />
+        <result column="phrase_id" property="phraseId" />
+        <result column="app_type" property="appTypeIndex" />
+        <result column="app_url" property="appUrl" />
+        <result column="app_logo" property="appLogo" />
+        <result column="app_verify_page" property="appVerifyPage" />
+    </resultMap>
+
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into gsms_phrase_audit_material (`phrase_id`, `app_type`, `app_url`, `app_logo`, `app_verify_page`)
+        values(#{phraseId},#{appType.value},#{appUrl},#{appLogo},#{appVerifyPage})
+    </insert>
+
+    <delete id="deleteByPhrase" parameterType="int">
+        delete from gsms_phrase_audit_material where phrase_id=#{phraseId}
+    </delete>
+
+    <select id="getByPhrase" resultMap="phraseAuditMaterialResult" parameterType="int">
+        select * from gsms_phrase_audit_material m where m.phrase_id = #{phraseId}
+    </select>
+
+    <update id="update">
+        update gsms_phrase_audit_material
+        set app_type=#{appType.value},app_url=#{appUrl},app_logo=#{appLogo},app_verify_page=#{appVerifyPage}
+        where id=#{id}
+    </update>
+
+</mapper>

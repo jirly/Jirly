@@ -1,0 +1,48 @@
+<form class="form-inline w5c-form" name="appForm" w5c-form-validate="" novalidate>
+    <div class="panel panel-success">
+        <div class="panel-heading">新增应用</div>
+        <table class="table table-striped table-bordered table-hover">
+            <tbody>
+                <tr>
+                    <td width="20%" class="text-right bold"><span class="red">*</span> 应用名称：</td>
+                    <td width="50%">
+                        <input type="text" id="name" name="name" ng-model="app.name" class="form-control" maxlength="20" style="width:200px;" required />
+                    </td>
+                    <td width="30%"></td>
+                </tr>
+                <tr>
+                    <td class="text-right bold">回调地址：</td>
+                    <td>
+                        <input type="text" id="callbackUrl" name="callbackUrl" ng-model="app.callbackUrl" maxlength="200" style="width:300px;" class="form-control" />
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="text-right bold">服务器白名单：</td>
+                    <td>
+                        <textarea class="form-control" id="trustIps" name="trustIps" ng-model="appTrustIpsStr" rows="3" style="width:300px;"></textarea>
+                    </td>
+                    <td class="text-muted">填写IP地址，多个请使用英文逗号隔开。
+                        <br/>如有设置，不在此IP之列的计算机不允许调用该应用接口。</td>
+                </tr>
+                <tr>
+                    <td class="text-right bold"><span class="red">*</span> 支持能力：</td>
+                    <td>
+                        <label class="checkbox-inline" ng-repeat="e in enablers">
+                            <input type="checkbox" id="enablers{{$index}}" name="enablers" ng-checked="isSelected(e.typeIdx)" ng-click="selectEnablers($event,e.typeIdx)" value="{{e.typeIdx}}" /> {{e.remark}}&nbsp;&nbsp; </label>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <div class="text-center">
+                            <button type="button" class="btn btn-sm btn-primary" ng-disabled="appForm.$invalid || appForm.$pristine" ng-click="submitForm();"><i class="fa fa-save"></i> 提交</button>
+                            &nbsp;
+                            <button type="button" class="btn btn-sm btn-info" onclick="window.history.back();"><i class="fa fa-undo"></i> 返回</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</form>

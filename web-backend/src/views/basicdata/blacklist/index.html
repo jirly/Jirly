@@ -1,0 +1,59 @@
+<form class="form-inline table-toolbar">
+    <button type="button" class="btn btn-sm btn-primary" ng-click="">
+        <i class="fa fa-plus"></i>&nbsp;新增
+    </button>
+    <button type="button" class="btn btn-sm btn-danger" ng-click="">
+        <i class="fa fa-remove"></i>&nbsp;删除
+    </button>
+    <button type="button" class="btn btn-sm btn-info" ng-click="importBlacklists()">
+        <i class="fa fa-sign-in"></i>&nbsp;导入
+    </button>
+    <div class="form-group pull-right">
+        <div class="input-group input-group-sm">
+            <label>数据来源
+                <select >
+                    <option value="-1" selected="selected">请选择</option>
+                    <option value="0">后台</option>
+                    <option value="2">企业</option>
+                </select>
+            </label>
+            <label>黑名单类型
+                <select>
+                    <option value="-1" selected="selected">请选择</option>
+                    <option value="6">企业黑名单</option>
+                    <option value="3">全局黑名单</option>
+                    <option value="0">用户黑名单</option>
+                    <option value="5">业务类型黑名单</option>
+                </select>
+            </label>
+        </div>
+        <div class="input-group input-group-sm">
+            <input type="text" ng-model="blacklistParams.target" class="form-control" placeholder="所属对象" aria-describedby="basic-addon">
+        </div>
+        <div class="input-group input-group-sm">
+            <input type="text" ng-model="blacklistParams.phone" class="form-control" placeholder="手机号码" aria-describedby="basic-addon">
+            <a class="input-group-addon" style="cursor: pointer;" ng-click=""><i class="fa fa-search"></i></a>
+        </div>
+    </div>
+</form>
+<div class="loading-container">
+    <div class="loading" ng-show="blacklistsTable.settings().$loading"></div>
+    <table ng-table="blacklistsTable" class="table table-striped table-bordered table-hover">
+        <tbody>
+        <tr ng-repeat="blacklist in $data">
+            <td width="30" data-title="&nbsp;" header="'ng-table/headers/checkbox.html'">
+                <input type="checkbox" name="id" value="{{blacklist.id}}" ng-checked="blacklist.$checked" ng-click="" />
+            </td>
+            <td data-title="'手机号码'" align="center"></a>{{blacklist.phone}}</td>
+            <td data-title="'黑名单类型'"  align="center"></a>{{blacklist.type}}</td>
+            <td data-title="'所属对象'" align="center">{{blacklist.target}}</td>
+            <td data-title="'备注'"  align="center">{{blacklist.remark}}</td>
+            <td data-title="'所属企业'"  align="center">{{blacklist.enterpriseId}}</td>
+            <td data-title="'录入人'"  align="center">{{blacklist.user}}</td>
+            <td data-title="'黑名单加入时间'" align="center">{{blacklist.createTime}}</td>
+            <td data-title="'数据来源'"  align="center">{{blacklist.handleFrom}}</td>
+            <td ></td>
+        </tr>
+        </tbody>
+    </table>
+</div>

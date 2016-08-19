@@ -1,0 +1,39 @@
+<form class="form-inline table-toolbar">
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="form-group pull-left">
+                <button type="button" class="btn btn-sm btn-primary" ng-click="addCarrierteleseg()">
+                    <i class="fa fa-plus"></i>&nbsp;新增
+                </button>
+                <button type="button" class="btn btn-sm btn-danger" ng-click="deleteCarriertelesegs()">
+                    <i class="fa fa-remove"></i>&nbsp;删除
+                </button>
+            </div>
+            <div class="form-group pull-right">
+                <label>运营商
+                    <select  class="form-control" ng-model="carriertelesegParams.carrier" ng-options="carrier.name for carrier in carriers">
+                    </select>
+                </label>
+                <div class="input-group input-group-sm">
+                    <input type="text" ng-model="carriertelesegParams.phone" class="form-control" placeholder="号码段" aria-describedby="basic-addon">
+                    <a class="input-group-addon" style="cursor: pointer;" ng-click="searchCarriertelesegs()" id="basic-addon"><i class="fa fa-search"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="loading-container">
+    <div class="loading" ng-show="carriertelesegsTable.settings().$loading"></div>
+    <table ng-table="carriertelesegsTable" class="table table-striped table-bordered table-hover">
+        <tbody>
+            <tr ng-repeat="carrierteleseg in $data">
+                <td width="30" data-title="&nbsp;" header="'ng-table/headers/checkbox.html'">
+                    <input type="checkbox" name="id" value="{{carrierteleseg.id}}" ng-checked="carrierteleseg.$checked" ng-click="checkOne(carrierteleseg);" />
+                </td>
+                <td data-title="'运营商'" width="25%" align="center" sortable="'name'">{{carrierteleseg.carrier.name}}</a></td>
+                <td data-title="'号码段'" width="25%" align="center" sortable="'phone'">{{carrierteleseg.phone}}</td>
+                <td width="50%"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

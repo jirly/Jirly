@@ -1,0 +1,41 @@
+server:
+    port: 80
+    sessionTimeout: 60000
+    contextPath: /cmp/v1.0.0
+
+spring:
+    application:
+        name: cmp
+    
+    datasource_gsms:
+        name: gsmsDS
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://172.16.0.44:3306/cmp_gsms?useSSL=false&autoReconnect=true&sessionVariables=FOREIGN_KEY_CHECKS=0&useUnicode=yes&characterEncoding=UTF-8
+        username: root
+        password: 123456
+        maxActive: 1000
+        maxIdle: 8
+        minIdle: 8
+        initialSize: 10
+        validationQuery: select 1
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        
+    datasource_list:
+        name: listDS
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://172.16.0.44:3306/cmp_list?useSSL=false&autoReconnect=true&sessionVariables=FOREIGN_KEY_CHECKS=0&useUnicode=yes&characterEncoding=UTF-8
+        username: root
+        password: 123456
+        maxActive: 1000
+        maxIdle: 8
+        minIdle: 8
+        initialSize: 10
+        validationQuery: select 1
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+
+mybatis:
+    config-location: classpath:mybatis-config.xml

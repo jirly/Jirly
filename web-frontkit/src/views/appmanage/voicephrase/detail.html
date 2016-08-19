@@ -1,0 +1,71 @@
+<table class="table table-striped table-bordered table-hover">
+    <tbody>
+        <tr>
+            <td width="20%">模板ID</td>
+            <td width="80%">{{phrase.identify}}</td>
+        </tr>
+        <tr>
+            <td>模板名称</td>
+            <td>
+                {{phrase.title}}
+            </td>
+        </tr>
+        <tr>
+            <td>模板类型</td>
+            <td ng-switch="phrase.type">
+                <span ng-switch-when="VOICE_NOTIFICATION">语音通知</span>
+                <span ng-switch-when="VOICE_VERIFICATION_CODE">语音验证码</span>
+            </td>
+        </tr>
+        <tr>
+            <td>所属应用</td>
+            <td>{{phrase.appName}}</td>
+        </tr>
+        <tr>
+            <td>模板内容</td>
+            <td><p>{{phrase.content}}</p></td>
+        </tr>
+        <tr>
+            <td>申请时间</td>
+            <td>{{phrase.createTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+        </tr>
+        <tr>
+            <td>审核状态</td>
+            <td ng-switch="phrase.state">
+                <span class="label label-info" ng-switch-when="CHECKING">待审核</span>
+                <span class="label label-success" ng-switch-when="IS_CHECKED">通过审核</span>
+                <span class="label label-danger" ng-switch-when="UNCHECK">未通过审核</span>
+            </td>
+        </tr>
+        <tr>
+            <td>审核意见</td>
+            <td><p>{{phrase.auditComment}}</p></td>
+        </tr>
+        <tr ng-if="phrase.type == 'VOICE_VERIFICATION_CODE'">
+            <td>产品类型</td>
+            <td ng-switch="phrase.appType">
+                <span ng-switch-when="ONLINE">已上线网页/APP</span>
+                <span ng-switch-when="OFFLINE">未上线网页/APP</span>
+            </td>
+        </tr>
+        <tr ng-if="phrase.type == 'VOICE_VERIFICATION_CODE' && phrase.appType == 'ONLINE'">
+            <td>APP/网页地址</td>
+            <td><p>{{phrase.appUrl}}</p></td>
+        </tr>
+        <tr ng-if="phrase.type == 'VOICE_VERIFICATION_CODE' && phrase.appType == 'OFFLINE'">
+            <td>产品名截图</td>
+            <td><a ng-if="phrase.appLogo" href="javascript:void(0);" ng-click="downloadFile(phrase.appLogo);">{{phrase.appLogo}}</a></td>
+        </tr>
+        <tr ng-if="phrase.type == 'VOICE_VERIFICATION_CODE' && phrase.appType == 'OFFLINE'">
+            <td>验证页截图</td>
+            <td><a ng-if="phrase.appVerifyPage" href="javascript:void(0);" ng-click="downloadFile(phrase.appVerifyPage);">{{phrase.appVerifyPage}}</a></td>
+        </tr>
+    </tbody>
+</table>
+<div class="text-center">
+    <button type="button" class="btn btn-sm btn-info" onclick="window.history.back();"><i class="fa fa-undo"></i> 返回</button>
+</div>
+
+
+
+

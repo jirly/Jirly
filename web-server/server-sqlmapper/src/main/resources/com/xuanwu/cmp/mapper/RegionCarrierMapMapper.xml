@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- Used by the mto client to fetch the frame -->
+<mapper namespace="com.xuanwu.cmp.mapper.RegionCarrierMapMapper">
+
+    <resultMap type="regionCarrierMap" id="regionCarrierMap">
+        <id property="id" column="id" />
+        <result property="phone" column="phone" />
+        <result property="brand" column="brand" />
+        <result property="regionId" column="region_id" />
+        <result property="carrierId" column="carrier_id" />
+        <result property="isRemoved" column="is_removed" />
+        <result property="removeId" column="remove_id" />
+        <result property="sort" column="sort" />
+        <result property="showed" column="showed" />
+        <result property="regionName" column="regionname" />
+        <result property="areaIdentity" column="areaIdentity" />
+    </resultMap>
+
+    <sql id="findResultsSql">
+        where mp.is_removed = 0 and mp.showed = 1
+        <if test="params.carrier!=null and params.carrier.id!=-1">
+            and carrier_id=#{params.carrier.id}
+        </if>
+        <if test="params.phone!=null and params.phone!=''">
+            and phone like concat('%',#{params.phone},'%')
+        </if>
+        <if test="params.province!=null and params.province.id!=-1">
+            and region_id =#{params.province.id}
+        </if>
+    </sql>
+
+    <select id="findResultCount" resultType="int">
+        select count(*)
+        from gsms_region_carrier_map mp
+        join gsms_carrier as ca on mp.carrier_id = ca.id
+        join gsms_region_code as rg on mp.region_id = rg.id
+        <include refid="findResultsSql" />
+    </select>
+
+    <select id="findResults" resultMap="regionCarrierMap">
+        select mp.id, mp.phone,mp.carrier_id, mp.region_id,ca.name as carriername,rg.name as regionname,rg.area_identity as areaIdentity
+        from gsms_region_carrier_map mp
+        join gsms_carrier as ca on mp.carrier_id = ca.id
+        join gsms_region_code as rg on mp.region_id = rg.id
+        <include refid="findResultsSql" />
+        <choose>
+            <when test="sorts.carrierName!=null">order by ca.name ${sorts.carrierName}</when>
+            <when test="sorts.phone!=null">order by mp.phone ${sorts.phone}</when>
+            <when test="sorts.regionName!=null">order by rg.name ${sorts.regionName}</when>
+        </choose>
+        <if test="page != null">limit #{page.from}, #{page.size}</if>
+    </select>
+
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+       insert into gsms_region_carrier_map (phone, carrier_id, region_id, showed)
+		values (#{phone}, #{carrierId}, #{regionId}, 1)
+    </insert>
+
+    <update id="update">
+       update gsms_region_carrier_map set phone=#{phone},
+		region_id=#{regionId},
+		carrier_id=#{carrierId}
+		where id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        update gsms_region_carrier_map set is_removed=1 where id=#{id}
+    </delete>
+
+    <select id="getById" resultMap="regionCarrierMap" parameterType="int">
+          select mp.id, mp.phone,mp.carrier_id, mp.region_id,ca.name as carriername,rg.name as regionname,rg.area_identity as areaIdentity
+        from gsms_region_carrier_map mp
+        join gsms_carrier as ca on mp.carrier_id = ca.id
+        join gsms_region_code as rg on mp.region_id = rg.id
+        where mp.is_removed = 0 and mp.showed = 1
+        and mp.id=#{id}
+    </select>
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.xuanwu.cmp.mapper.BlacklistMapper">
+
+	<resultMap id="blacklist" type="blacklist">
+		<id property="id" column="id" />
+		<result property="desID" column="des_id"/>
+		<result property="enterpriseID" column="enterprise_id"/>
+		<result property="phone" column="phone"/>
+		<result property="createTime" column="create_time"/>
+		<result property="user" column="user"/>
+		<result property="handleFrom" column="handle_from"/>
+		<result property="target" column="target"/>
+		<result property="type" column="type"/>
+		<result property="remark" column="remark"/>
+	</resultMap>
+
+	<sql id="findResultsSql">
+		where 1=1
+		<if test="params.dataFrom != null and params.dataFrom >= 0">and handle_from = #{params.dataFrom}</if>
+		<if test="params.phone != null and params.phone != '' ">and phone = #{params.phone}</if>
+		<if test="params.target != null and params.target > 0">and target = #{params.target}</if>
+		<if test="params.type != null and params.type >= 0">
+			<if test="params.type == 6">
+				and type in(2,6)
+			</if>
+			<if test="params.type != 6">
+				and type = #{params.type}
+			</if>
+		</if>
+	</sql>
+
+    <select id="findResultCount" resultType="int">
+       select count(id)
+       from gsms_black_phone_list
+		<include refid="findResultsSql" />
+	</select>
+    
+    <select id="findResults" resultMap="blacklist">
+       select id,des_id,enterprise_id,phone,create_time,user,handle_from,target,type,remark
+       from gsms_black_phone_list
+		<include refid="findResultsSql" />
+		<if test="page != null">limit #{page.from}, #{page.size}</if>
+	</select>
+
+</mapper>
